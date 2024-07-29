@@ -71,3 +71,33 @@ def start_server(host,port):
 host = socket.gethostname()
 port = 5678
 start_server(host,port)
+
+
+
+
+
+
+#Client Side
+
+
+import socket
+
+def send_request(command):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+        client_socket.connect((socket.gethostname(), 5678))
+        client_socket.sendall(command.encode('utf-8'))
+        
+        response = client_socket.recv(4096).decode('utf-8')
+        print(response)
+
+def main():
+    while True:
+        print("Enter command (student list, topper list, teacher list, subject list) or 'exit' to quit:")
+        command = input().strip()
+        if command == 'exit':
+            break
+        send_request(command)
+
+if __name__ == "__main__":
+    main()
+
