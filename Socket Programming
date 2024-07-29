@@ -1,0 +1,73 @@
+#Server Side
+
+
+import socket
+
+data = {
+    'department': {
+        'CS': {
+            'year1': 50,
+            'year2': 45,
+            'year3': 40,
+            'topper': ['shripad', 'Nikhil', 'Vedant'],
+            'class_teachers': ['Prof. tejal', 'Prof. sunita'],
+            'subject_teachers': {'Math': 'Ingle sir', 'CS': 'latika'},
+            'subjects': ['Math', 'CS', 'Physics']
+        },
+        'EE': {
+            'year1': 60,
+            'year2': 55,
+            'year3': 50,
+            'topper': ['Prashant', 'Vedanti', 'Swati'],
+            'class_teachers': ['Prof. Ashok', 'Prof. Vishal'],
+            'subject_teachers': {'Electronics': 'Sunil sir', 'Circuit Theory': 'Anil sir'},
+            'subjects': ['Electronics', 'Circuit Theory', 'Mathematics']
+        }
+    }
+}
+
+def handle_client_connection(client_socket):
+    while True:
+        command = client_socket.recv(1024).decode('utf-8')
+        if not command:
+            break
+        
+        response = ""
+        
+        if command == 'student list':
+            response = "\n".join([f"{dept}: Year 1: {info['year1']}, Year 2: {info['year2']}, Year 3: {info['year3']}"
+                                  for dept, info in data['department'].items()])
+        
+        elif command == 'topper list':
+            response = "\n".join([f"{dept}: Topper List: {', '.join(info['topper'])}"
+                                  for dept, info in data['department'].items()])
+        
+        elif command == 'teacher list':
+            response = "\n".join([f"{dept}: Class Teachers: {', '.join(info['class_teachers'])}, Subject Teachers: {', '.join(f'{subj}: {teacher}' for subj, teacher in info['subject_teachers'].items())}"
+                                  for dept, info in data['department'].items()])
+        
+        elif command == 'subject list':
+            response = "\n".join([f"{dept}: Subjects: {', '.join(info['subjects'])}"
+                                  for dept, info in data['department'].items()])
+        
+        else:
+            response = "Invalid command. Please use one of the following: 'student list', 'topper list', 'teacher list', 'subject list'."
+        
+        client_socket.sendall(response.encode('utf-8'))
+    
+    client_socket.close()
+
+def start_server(host,port):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((host,port))
+    server.listen(5)
+    print("Server listening on port 65432")
+    
+    while True:
+        client_socket, addr = server.accept()
+        print(f"Accepted connection from {addr}")
+        handle_client_connection(client_socket)
+
+host = socket.gethostname()
+port = 5678
+start_server(host,port)
