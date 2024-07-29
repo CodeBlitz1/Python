@@ -1,1 +1,159 @@
+import sys
+from PyQt5.QtWidgets import *
+import mysql.connector
+from datetime import datetime
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Book Management System")
+        self.setGeometry(100, 100, 600, 400)
+        
+        self.setupUi()
+
+    def setupUi(self):
+        centralWidget = QWidget()
+        self.setCentralWidget(centralWidget)
+
+        layout = QVBoxLayout(centralWidget)
+
+        self.tabs = QTabWidget()
+        self.create_tab = QWidget()
+        self.update_tab = QWidget()
+        self.delete_tab = QWidget()
+        self.view_tab = QWidget()
+
+        self.tabs.addTab(self.create_tab, "Create")
+        self.tabs.addTab(self.update_tab, "Update")
+        self.tabs.addTab(self.delete_tab, "Delete")
+        self.tabs.addTab(self.view_tab, "View")
+
+        layout.addWidget(self.tabs)
+
+        self.setup_create_tab()
+        self.setup_update_tab()
+        self.setup_delete_tab()
+        self.setup_view_tab()
+
+    def setup_create_tab(self):
+        layout = QVBoxLayout()
+
+        self.book_name_entry = QLineEdit()
+        self.book_price_entry = QLineEdit()
+        self.book_author_entry = QLineEdit()
+        self.add_button = QPushButton("Add Book")
+        self.add_button.clicked.connect(self.add_book)
+
+        layout.addWidget(QLabel("Book Name:"))
+        layout.addWidget(self.book_name_entry)
+        layout.addWidget(QLabel("Book Price:"))
+        layout.addWidget(self.book_price_entry)
+        layout.addWidget(QLabel("Book Author:"))
+        layout.addWidget(self.book_author_entry)
+        layout.addWidget(self.add_button)
+
+        self.create_tab.setLayout(layout)
+
+    def setup_update_tab(self):
+        layout = QVBoxLayout()
+
+        self.update_name_entry = QLineEdit()
+        self.update_button = QPushButton("Update Book")
+        self.update_button.clicked.connect(self.update_book)
+
+        layout.addWidget(QLabel("Enter Book Name to Update:"))
+        layout.addWidget(self.update_name_entry)
+        layout.addWidget(self.update_button)
+
+        self.update_tab.setLayout(layout)
+
+    def setup_delete_tab(self):
+        layout = QVBoxLayout()
+
+        self.delete_name_entry = QLineEdit()
+        self.delete_button = QPushButton("Delete Book")
+        self.delete_button.clicked.connect(self.delete_book)
+
+        layout.addWidget(QLabel("Enter Book Name to Delete:"))
+        layout.addWidget(self.delete_name_entry)
+        layout.addWidget(self.delete_button)
+
+        self.delete_tab.setLayout(layout)
+
+    def setup_view_tab(self):
+        layout = QVBoxLayout()
+
+        self.view_author_entry = QLineEdit()
+        self.view_button = QPushButton("View Books")
+        self.view_button.clicked.connect(self.view_books)
+
+        layout.addWidget(QLabel("Enter Author Name to View Books:"))
+        layout.addWidget(self.view_author_entry)
+        layout.addWidget(self.view_button)
+
+        self.view_tab.setLayout(layout)
+
+    def add_book(self):
+        book_name = self.book_name_entry.text().strip()
+        book_price = self.book_price_entry.text().strip()
+        book_author = self.book_author_entry.text().strip()
+        added_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        if book_name and book_price and book_author:
+            try:
+                conn = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    password="",
+                    database="test")
+                cursor = conn.cursor()
+
+                sql = "INSERT INTO books (name, price, author, added_date) VALUES (%s, %s, %s, %s)"
+                val = (book_name, book_price, book_author, added_date)
+                cursor.execute(sql, val)
+                conn.commit()
+
+                QMessageBox.information(self, "Success", "Book added successfully!")
+                
+                self.book_name_entry.clear()
+                self.book_price_entry.clear()
+                self.book_author_entry.clear()
+
+            except mysql.connector.Error as e:
+                QMessageBox.critical(self, "Error", f"Error adding book: {e}")
+
+    
+                conn.close()
+
+        else:
+            QMessageBox.warning(self, "Warning", "Please fill all fields.")
+
+    def update_book(self):
+        book_name = self.update_name_entry.text().strip()
+
+        if book_name:
+            pass
+        else:
+            QMessageBox.warning(self, "Warning", "Please enter a book name.")
+
+    def delete_book(self):
+        book_name = self.delete_name_entry.text().strip()
+
+        if book_name:
+            pass
+        else:
+            QMessageBox.warning(self, "Warning", "Please enter a book name.")
+
+    def view_books(self):
+        author_name = self.view_author_entry.text().strip()
+
+        if author_name:
+            pass
+        else:
+            QMessageBox.warning(self, "Warning", "Please enter an author name.")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
