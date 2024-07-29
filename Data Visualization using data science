@@ -1,0 +1,53 @@
+#Scatter 
+
+
+import matplotlib.pyplot as plt
+
+email_sent =  [10,30,50,60]               
+profit = [100,300,500,600]
+
+plt.figure(figsize=(10,6))
+# plt.plot(month,profit,marker="o",linestyle="-",color="b",markersize=8)
+plt.scatter(email_sent,profit,marker="o",color='b')
+plt.xlabel("email sent")
+plt.ylabel("profit")
+plt.title("Profit chart")
+plt.grid(True)
+plt.show()
+
+
+
+
+#Bar Graph
+
+
+import matplotlib.pyplot as plt
+
+Month = ['jan','Feb','March','Apr','May']
+sales = [10,20,40,30,70]
+plt.figure(figsize=(10,6))
+mygraph=plt.bar(Month,sales,color=['b','r','g','y'])
+plt.title("Months sales")
+plt.xlabel("Months")
+plt.ylabel("Sales in %")
+plt.legend(mygraph,Month)
+plt.show()
+
+
+
+
+
+
+#PieChart
+
+import matplotlib.pyplot as plt
+
+course = ['java','python','Web-devolpment','Android']
+Complition = [80,60,40,50]
+plt.figure(figsize=(10,6))
+plt.pie(Complition, labels=course,
+        autopct='%1.1f%%',
+        colors=['skyblue','lightgreen','lightcoral','red'],
+        startangle=140)
+plt.title('Complition status details')
+plt.show()
